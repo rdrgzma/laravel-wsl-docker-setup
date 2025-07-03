@@ -88,7 +88,7 @@ laravel-setup site-cliente --deploy=cpanel:ftp.site.com
 
 | Flag                   | Descrição                                                  |       |                                      |
 | ---------------------- | ---------------------------------------------------------- | ----- | ------------------------------------ |
-| `--php=8.1`            | Instala o PHP 8.1                                                        | 8.2 | Define a versão do PHP (padrão: 8.2) |
+| `--php=8.1`            | Instala o PHP 8.1                                          | 8.2   | Define a versão do PHP (padrão: 8.2) |
 | `--filament`           | Instala o painel FilamentPHP                               |       |                                      |
 | `--ibex`               | Instala o Ibex CRUD Generator                              |       |                                      |
 | `--deploy=host`        | Faz deploy via SSH para VPS (ex: `--deploy=meuvps.com`)    |       |                                      |
@@ -108,57 +108,41 @@ laravel-setup site-cliente --deploy=cpanel:ftp.site.com
   * Password: `secret`
 
 ---
+## 🌐 Acesso ao projeto
 
-## 📤 Deploy automático
-
-### ➤ Para VPS (via SSH):
-
-```bash
-laravel-setup meu-projeto --deploy=meuvps.com
-```
-
-> Envia todos os arquivos via `rsync` para `~/public_html/` do servidor.
-
----
-
-### ➤ Para cPanel (via FTP):
-
-```bash
-laravel-setup meu-site --deploy=cpanel:ftp.dominio.com
-```
-
-> Será solicitado o usuário FTP. A senha será solicitada ao iniciar o upload com `lftp`.
+- Laravel App: http://localhost:8000  
+- phpMyAdmin: http://localhost:8080  
+- Banco de Dados:
+  - Host: `mysql`
+  - Database: **igual ao nome do projeto** (ex: `minha-app`)
+  - User: `laravel`
+  - Password: `secret`
 
 ---
 
-## 🛠 Recomendações
-
-* Para múltiplos projetos, use pastas diferentes por projeto.
-* Personalize o `docker-compose.yml` se quiser adicionar Redis, Mailhog, etc.
-* Adicione `ALIAS` no seu `.bashrc` se quiser atalhos para `artisan`, `composer`, etc.
-
----
-
-## 🧠 Dica para uso com VS Code
-
-Abra o terminal do WSL e execute:
+## 📂 Próximos passos após criação
 
 ```bash
+cd nome-do-projeto
 code .
-```
+Você pode começar a desenvolver imediatamente com VS Code e Docker.
 
-> Isso abrirá o VS Code diretamente no projeto, com suporte total ao Docker, intellisense, terminal WSL etc.
+📤 Deploy automático
+➤ Para VPS (via SSH):
+bash
+Copiar
+Editar
+laravel-setup minha-app --deploy=meuvps.com
+Envia os arquivos via rsync para ~/public_html/.
 
----
+➤ Para cPanel (via FTP):
+bash
+Copiar
+Editar
+laravel-setup minha-app --deploy=cpanel:ftp.seusite.com
+Será solicitado o usuário FTP (senha no prompt). Envia via lftp.
 
-## 🧑‍💻 Autor
 
-**Márcio Rodriguez**
-[GitHub @rdrgzma](https://github.com/rdrgzma)
-
----
-
-## 🪪 Licença
 
 MIT License. Livre para uso, modificação e contribuição.
 
@@ -166,6 +150,4 @@ MIT License. Livre para uso, modificação e contribuição.
 
 ```
 
-
-```
 

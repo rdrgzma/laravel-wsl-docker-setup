@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# -------------------------------
-# Laravel Setup CLI (global)
-# -------------------------------
+# Laravel Setup CLI - Utilitário de desenvolvimento com Docker no WSL
 
 PROJECT_NAME=""
 PHP_VERSION="8.2"
@@ -10,7 +8,7 @@ INSTALL_FILAMENT=false
 INSTALL_IBEX=false
 DEPLOY_TARGET=""
 
-# 🧠 Parse argumentos
+# Parse de argumentos
 for arg in "$@"; do
   case $arg in
     --php=*) PHP_VERSION="${arg#*=}"; shift ;;
@@ -31,15 +29,16 @@ if [ -z "$PROJECT_NAME" ]; then
   exit 1
 fi
 
-echo "📦 Criando projeto Laravel '${PROJECT_NAME}' com PHP ${PHP_VERSION}"
+DB_NAME="${PROJECT_NAME//[^a-zA-Z0-9_]/_}"
+
+echo "📦 Criando projeto Laravel '${PROJECT_NAME}' com banco '${DB_NAME}' e PHP ${PHP_VERSION}"
 echo "➡️ Filament: ${INSTALL_FILAMENT}, Ibex: ${INSTALL_IBEX}, Deploy: ${DEPLOY_TARGET}"
 
-# Criar diretório e iniciar projeto Laravel via Docker
 mkdir -p "$PROJECT_NAME" && cd "$PROJECT_NAME"
 
 docker run --rm -v "$(pwd)":/app composer create-project laravel/laravel="^12.0" .
 
-# Criar docker-compose.yml
+# docker-compose.yml
 cat > docker-compose.yml <<EOD
 version: "3.8"
 
@@ -60,7 +59,7 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: laravel
+      MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: laravel
       MYSQL_PASSWORD: secret
     volumes:
@@ -80,14 +79,15 @@ volumes:
   mysql-data:
 EOD
 
-# Ajustar .env
-sed -i 's/DB_HOST=.*/DB_HOST=mysql/' .env
-sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' .env
-sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
+# Configurar .env
+sed -i "s/DB_HOST=.*/DB_HOST=mysql/" .env
+sed -i "s/DB_DATABASE=.*/DB_DATABASE=${DB_NAME}/" .env
+sed -i "s/DB_USERNAME=.*/DB_USERNAME=laravel/" .env
+sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=secret/" .env
 
 docker-compose up -d
 
-# Instalar Filament se solicitado
+# Instalar Filament
 if [ "$INSTALL_FILAMENT" = true ]; then
   docker exec -it "${PROJECT_NAME}-app" composer require filament/filament:"^3.0"
   docker exec -it "${PROJECT_NAME}-app" php artisan vendor:publish --tag=filament-config
@@ -99,14 +99,18 @@ if [ "$INSTALL_IBEX" = true ]; then
   docker exec -it "${PROJECT_NAME}-app" php artisan vendor:publish --tag=ibex-config
 fi
 
-# Git init
+# Git
 git init
 curl -s https://raw.githubusercontent.com/github/gitignore/main/Laravel.gitignore -o .gitignore
 git add . && git commit -m "Initial Laravel setup"
 
-echo "✅ Projeto pronto!"
+echo "✅ Projeto '${PROJECT_NAME}' pronto!"
 echo "🌐 App: http://localhost:8000"
-echo "🛠 phpMyAdmin: http://localhost:8080"
+echo "🛠 phpMyAdmin: http://localhost:8080 (Banco: ${DB_NAME})"
+echo ""
+echo "📂 Próximos passos:"
+echo "cd $PROJECT_NAME"
+echo "code ."
 
 # Deploy opcional
 if [ -n "$DEPLOY_TARGET" ]; then
@@ -120,4 +124,3 @@ if [ -n "$DEPLOY_TARGET" ]; then
     rsync -avz --exclude='.git' ./ "$USER@$DEPLOY_TARGET:~/public_html/"
   fi
 fi
-
