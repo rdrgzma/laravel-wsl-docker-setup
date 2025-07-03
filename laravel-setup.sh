@@ -29,8 +29,16 @@ while true; do
 done
 
 read -p "🎨 Deseja instalar FilamentPHP? (s/n) [n]: " INSTALL_FILAMENT
-INSTALL_FILAMENT=${INSTALL_FILAMENT:-n}
+# Gerar Dockerfile com suporte à extensão intl se for instalar Filament
+if [[ "$INSTALL_FILAMENT" =~ ^[Ss]$ ]]; then
+  cat > Dockerfile <<EOF
+FROM laravelsail/php${PHP_VERSION//.}-composer
 
+RUN apt-get update \\
+    && apt-get install -y libicu-dev \\
+    && docker-php-ext-install intl
+EOF
+fi
 read -p "⚙️ Deseja instalar Ibex CRUD Generator? (s/n) [n]: " INSTALL_IBEX
 INSTALL_IBEX=${INSTALL_IBEX:-n}
 
@@ -49,7 +57,9 @@ docker run --rm -v "$(pwd)":/app composer create-project laravel/laravel="^12.0"
 cat > docker-compose.yml <<EOD
 services:
   app:
-    image: laravelsail/php${PHP_VERSION//.}-composer
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: ${PROJECT_NAME}-app
     ports:
       - "${APP_PORT}:8000"
