@@ -1,142 +1,115 @@
+# 🚀 Laravel Setup CLI (WSL + Docker) - Interativo
+
+Este utilitário de linha de comando simplifica a criação de ambientes Laravel 12 com **Docker no WSL**, permitindo que você configure tudo de forma **interativa**, em poucos segundos.
 
 ---
 
----
-# 🚀 Laravel Setup CLI (WSL + Docker)
+## 🎯 Funcionalidades
 
-**Laravel Setup CLI** é um utilitário de linha de comando simples e poderoso para criar ambientes Laravel 12 com Docker no **WSL2 (Ubuntu)**, com suporte a:
-
-- Várias versões do PHP (8.0, 8.1, 8.2)
-- Instalação opcional do **FilamentPHP** e **Ibex CRUD Generator**
-- MySQL + phpMyAdmin prontos para uso
-- Deploy automatizado para servidores **VPS via SSH** ou **cPanel via FTP**
-
----
-
-## 🧰 O que este script faz?
-
-- 📦 Cria projeto Laravel 12 automaticamente com Docker
-- 🐳 Gera `docker-compose.yml` com PHP, MySQL e phpMyAdmin
-- 🔐 Configura `.env` com credenciais padrão
-- ⚙️ Permite escolher a versão do PHP
-- 🎨 Instala FilamentPHP (opcional)
-- 🔧 Instala ibex/crud-generator (opcional)
-- 🚀 Permite deploy via SSH ou FTP para VPS/cPanel
-- 🧪 Inicializa repositório Git com `.gitignore` padrão
+✅ Interface interativa via `laravel-setup init`  
+✅ Suporte a PHP 8.0, 8.1, 8.2  
+✅ Banco de dados: escolha entre **MySQL** ou **SQLite**  
+✅ MySQL com **phpMyAdmin** incluso  
+✅ Instalação opcional do **FilamentPHP**  
+✅ Instalação opcional do **Ibex CRUD Generator**  
+✅ Instalação de **starter kits**: Breeze ou Jetstream  
+✅ Geração automática de estrutura de **API**  
+✅ Escolha da porta local para rodar o app  
+✅ Git + .gitignore Laravel automático  
+✅ Pronto para usar com **VS Code + Docker + WSL**
 
 ---
 
-## ⚙️ Pré-requisitos
+## 📦 Requisitos
 
-Você precisa ter instalado no WSL:
-
-- WSL2 com Ubuntu
-- Docker Desktop (com integração com WSL)
+- WSL2 (Ubuntu)
+- Docker Desktop (com integração WSL ativada)
 - Git
-- `lftp` (para deploy FTP)
-- `rsync` (para deploy SSH)
-- VS Code com extensão “Remote - WSL” (opcional)
+- `curl`, `rsync`, `lftp` (para deploy, opcionais)
+- VS Code com extensão *Remote - WSL* (opcional)
 
 ---
 
-## 📥 Instalação do script
+## 🚀 Como usar
 
-### 1. Clone este repositório ou baixe o script:
-
-```bash
-git clone https://github.com/rdrgzma/laravel-wsl-docker-setup.git
-cd laravel-wsl-docker-setup
-````
-
-### 2. Torne o script global:
+### 1. Instale o script globalmente
 
 ```bash
 chmod +x laravel-setup.sh
 sudo mv laravel-setup.sh /usr/local/bin/laravel-setup
 ```
 
-> Agora você pode rodar `laravel-setup` de qualquer lugar no terminal.
+### 2. Execute o instalador interativo
+
+```bash
+laravel-setup init
+```
 
 ---
-2. Execute o instalador interativo
-bash
-Copiar
-Editar
-laravel-setup init
-🤖 Durante a execução, você informará:
-📦 Nome do projeto (ex: meu-sistema)
 
-🧩 Versão do PHP: 8.0, 8.1, 8.2 (default)
+## 🤖 Durante a execução, você informará:
 
-💾 Banco de dados: mysql ou sqlite
+- 📦 Nome do projeto (ex: `my-app`) **(padrão: my-app)**
+- 🧩 Versão do PHP: `8.0`, `8.1`, `8.2` **(padrão: 8.2)**
+- 💾 Banco de dados: `mysql` ou `sqlite` **(padrão: mysql)**
+- 🌐 Porta local (ex: `8000`) **(padrão: 8000)**
+- 🎨 Deseja instalar **FilamentPHP**? **(padrão: não)**
+- ⚙️ Deseja instalar **Ibex CRUD Generator**? **(padrão: não)**
+- 🚀 Deseja instalar Starter Kit: **breeze**, **jetstream** ou **none** **(padrão: none)**
+- 🧪 Deseja gerar API Laravel? **(padrão: não)**
 
-🌐 Porta local (ex: 8000)
+---
 
-🎨 Deseja instalar FilamentPHP?
+## 📂 Próximos passos
 
-⚙️ Deseja instalar Ibex CRUD Generator?
-
-🔧 O que será gerado
-Projeto Laravel 12 pronto na pasta escolhida
-
-.env ajustado com as configurações de banco e porta
-
-docker-compose.yml com serviços:
-
-app (PHP + Laravel)
-
-mysql (opcional)
-
-phpmyadmin (opcional)
-
-Banco de dados com o mesmo nome do projeto
-
-database/database.sqlite (se SQLite)
-
-Git iniciado com .gitignore Laravel oficial
-
-📂 Próximos passos
 Após a instalação:
 
-bash
-Copiar
-Editar
+```bash
 cd nome-do-projeto
 code .
+```
+
 Abra com o VS Code (WSL) e comece a desenvolver.
 
-🌐 Acesso local
-App Laravel: http://localhost:<porta_escolhida>
+---
 
-phpMyAdmin (se MySQL): http://localhost:8080
+## 🌐 Acesso local
 
-Banco: mesmo nome do projeto
+- App Laravel: `http://localhost:<porta_escolhida>`
+- phpMyAdmin (se MySQL): `http://localhost:8080`
+  - Banco: mesmo nome do projeto
+  - Usuário: `laravel`
+  - Senha: `secret`
 
-Usuário: laravel
+---
 
-Senha: secret
+## 🛠 Exemplos de uso
 
-🛠 Exemplos de uso
-bash
-Copiar
-Editar
-# Iniciar novo projeto Laravel com MySQL e Filament
+```bash
+# Iniciar novo projeto Laravel com MySQL, Filament e Jetstream
 laravel-setup init
-# e informe as opções desejadas no terminal
-📤 Deploy (em breve)
+```
+
+---
+
+## 📤 Deploy (em breve)
+
 Você poderá usar o modo de deploy automatizado para:
 
-🔄 Enviar projeto via SSH para VPS
-
-🔄 Enviar projeto via FTP para cPanel
+- 🔄 Enviar projeto via **SSH para VPS**
+- 🔄 Enviar projeto via **FTP para cPanel**
 
 (esse recurso está em desenvolvimento)
 
-👨‍💻 Autor
-Márcio Rodriguez
-GitHub @rdrgzma
-Feito para desenvolvedores que usam Laravel com WSL + Docker de forma produtiva.
+---
 
-🪪 Licença
+## 👨‍💻 Autor
+
+**Márcio Rodriguez**  
+[GitHub @rdrgzma](https://github.com/rdrgzma)
+
+---
+
+## 🪪 Licença
+
 MIT License. Livre para uso, modificação e contribuição.
-
