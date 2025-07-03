@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Build .deb
         run: |
           mkdir -p pkg/usr/local/bin
@@ -26,6 +27,7 @@ Description: Script installer for Laravel setup
 EOF
           dpkg-deb --build pkg
           mv pkg.deb laravel-setup_${GITHUB_REF#refs/tags/}.deb
+
       - name: Upload .deb
         uses: softprops/action-gh-release@v2
         with:
