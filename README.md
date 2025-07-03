@@ -58,56 +58,85 @@ sudo mv laravel-setup.sh /usr/local/bin/laravel-setup
 > Agora você pode rodar `laravel-setup` de qualquer lugar no terminal.
 
 ---
+2. Execute o instalador interativo
+bash
+Copiar
+Editar
+laravel-setup init
+🤖 Durante a execução, você informará:
+📦 Nome do projeto (ex: meu-sistema)
 
-## 🚀 Como usar
+🧩 Versão do PHP: 8.0, 8.1, 8.2 (default)
 
-```bash
-laravel-setup nome-do-projeto [opções]
-```
+💾 Banco de dados: mysql ou sqlite
 
-### ✅ Exemplos:
+🌐 Porta local (ex: 8000)
 
-```bash
-# Criar projeto Laravel com PHP 8.2 (default)
-laravel-setup minha-app
+🎨 Deseja instalar FilamentPHP?
 
-# Laravel com PHP 8.1 + Filament
-laravel-setup painel-admin --php=8.1 --filament
+⚙️ Deseja instalar Ibex CRUD Generator?
 
-# Laravel com Ibex CRUD Generator e deploy em VPS
-laravel-setup sistema-completo --ibex --deploy=meuvps.com
+🔧 O que será gerado
+Projeto Laravel 12 pronto na pasta escolhida
 
-# Laravel com deploy via FTP para cPanel
-laravel-setup site-cliente --deploy=cpanel:ftp.site.com
-```
+.env ajustado com as configurações de banco e porta
 
----
+docker-compose.yml com serviços:
 
-## ⚙️ Opções disponíveis
+app (PHP + Laravel)
 
-| Flag                   | Descrição                                                  |       |                                      |
-| ---------------------- | ---------------------------------------------------------- | ----- | ------------------------------------ |
-| `--php=8.1`            | Instala o PHP 8.1                                          | 8.2   | Define a versão do PHP (padrão: 8.2) |
-| `--filament`           | Instala o painel FilamentPHP                               |       |                                      |
-| `--ibex`               | Instala o Ibex CRUD Generator                              |       |                                      |
-| `--deploy=host`        | Faz deploy via SSH para VPS (ex: `--deploy=meuvps.com`)    |       |                                      |
-| `--deploy=cpanel:host` | Faz deploy via FTP para cPanel (ex: `--deploy=cpanel:ftp`) |       |                                      |
+mysql (opcional)
 
----
-## 🌐 Acesso ao projeto
+phpmyadmin (opcional)
 
-- Laravel App: http://localhost:8000  
-- phpMyAdmin: http://localhost:8080  
-- Banco de Dados:
-  - Host: `mysql`
-  - Database: **igual ao nome do projeto** (ex: `minha-app`)
-  - User: `laravel`
-  - Password: `secret`
+Banco de dados com o mesmo nome do projeto
 
----
+database/database.sqlite (se SQLite)
 
-## 📂 Próximos passos após criação
+Git iniciado com .gitignore Laravel oficial
 
-```bash
+📂 Próximos passos
+Após a instalação:
+
+bash
+Copiar
+Editar
 cd nome-do-projeto
 code .
+Abra com o VS Code (WSL) e comece a desenvolver.
+
+🌐 Acesso local
+App Laravel: http://localhost:<porta_escolhida>
+
+phpMyAdmin (se MySQL): http://localhost:8080
+
+Banco: mesmo nome do projeto
+
+Usuário: laravel
+
+Senha: secret
+
+🛠 Exemplos de uso
+bash
+Copiar
+Editar
+# Iniciar novo projeto Laravel com MySQL e Filament
+laravel-setup init
+# e informe as opções desejadas no terminal
+📤 Deploy (em breve)
+Você poderá usar o modo de deploy automatizado para:
+
+🔄 Enviar projeto via SSH para VPS
+
+🔄 Enviar projeto via FTP para cPanel
+
+(esse recurso está em desenvolvimento)
+
+👨‍💻 Autor
+Márcio Rodriguez
+GitHub @rdrgzma
+Feito para desenvolvedores que usam Laravel com WSL + Docker de forma produtiva.
+
+🪪 Licença
+MIT License. Livre para uso, modificação e contribuição.
+

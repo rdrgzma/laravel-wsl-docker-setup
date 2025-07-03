@@ -1,38 +1,23 @@
 #!/bin/bash
 
-# Laravel Setup CLI - Utilitário de desenvolvimento com Docker no WSL
+# Laravel Setup CLI - Interativo
+set -e
 
-PROJECT_NAME=""
-PHP_VERSION="8.2"
-INSTALL_FILAMENT=false
-INSTALL_IBEX=false
-DEPLOY_TARGET=""
-
-# Parse de argumentos
-for arg in "$@"; do
-  case $arg in
-    --php=*) PHP_VERSION="${arg#*=}"; shift ;;
-    --filament) INSTALL_FILAMENT=true; shift ;;
-    --ibex) INSTALL_IBEX=true; shift ;;
-    --deploy=*) DEPLOY_TARGET="${arg#*=}"; shift ;;
-    *)
-      if [[ -z $PROJECT_NAME ]]; then
-        PROJECT_NAME="$arg"; shift
-      fi
-      ;;
-  esac
-done
-
-if [ -z "$PROJECT_NAME" ]; then
-  echo "❌ Nome do projeto é obrigatório."
-  echo "Uso: laravel-setup nome-do-projeto [--php=8.2] [--filament] [--ibex] [--deploy=host]"
+if [ "$1" != "init" ]; then
+  echo "Uso: laravel-setup init"
   exit 1
 fi
 
-DB_NAME="${PROJECT_NAME//[^a-zA-Z0-9_]/_}"
+read -p "📦 Nome do projeto: " PROJECT_NAME
+read -p "🧩 Versão do PHP (8.0, 8.1, 8.2): " PHP_VERSION
+read -p "💾 Banco de dados (mysql/sqlite): " DB_TYPE
+read -p "📦 Porta para o app Laravel (ex: 8000): " APP_PORT
+read -p "🛠 Instalar FilamentPHP? (s/n): " INSTALL_FILAMENT
+read -p "🛠 Instalar Ibex CRUD Generator? (s/n): " INSTALL_IBEX
 
-echo "📦 Criando projeto Laravel '${PROJECT_NAME}' com banco '${DB_NAME}' e PHP ${PHP_VERSION}"
-echo "➡️ Filament: ${INSTALL_FILAMENT}, Ibex: ${INSTALL_IBEX}, Deploy: ${DEPLOY_TARGET}"
+PHP_VERSION=${PHP_VERSION:-8.2}
+APP_PORT=${APP_PORT:-8000}
+DB_NAME="${PROJECT_NAME//[^a-zA-Z0-9_]/_}"
 
 mkdir -p "$PROJECT_NAME" && cd "$PROJECT_NAME"
 
@@ -47,11 +32,15 @@ services:
     image: laravelsail/php${PHP_VERSION//.}-composer
     container_name: ${PROJECT_NAME}-app
     ports:
-      - "8000:8000"
+      - "${APP_PORT}:8000"
     volumes:
       - .:/var/www/html
     working_dir: /var/www/html
     command: php artisan serve --host=0.0.0.0 --port=8000
+EOD
+
+if [ "$DB_TYPE" = "mysql" ]; then
+cat >> docker-compose.yml <<EOD
     depends_on:
       - mysql
 
@@ -78,49 +67,39 @@ services:
 volumes:
   mysql-data:
 EOD
+fi
 
 # Configurar .env
-sed -i "s/DB_HOST=.*/DB_HOST=mysql/" .env
-sed -i "s/DB_DATABASE=.*/DB_DATABASE=${DB_NAME}/" .env
-sed -i "s/DB_USERNAME=.*/DB_USERNAME=laravel/" .env
-sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=secret/" .env
+sed -i "s/DB_HOST=.*/DB_HOST=${DB_TYPE}/" .env
+if [ "$DB_TYPE" = "mysql" ]; then
+  sed -i "s/DB_DATABASE=.*/DB_DATABASE=${DB_NAME}/" .env
+  sed -i "s/DB_USERNAME=.*/DB_USERNAME=laravel/" .env
+  sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=secret/" .env
+else
+  sed -i "s/DB_CONNECTION=.*/DB_CONNECTION=sqlite/" .env
+  touch database/database.sqlite
+  sed -i "s/DB_DATABASE=.*/DB_DATABASE=\/var\/www\/html\/database\/database.sqlite/" .env
+fi
 
 docker-compose up -d
 
 # Instalar Filament
-if [ "$INSTALL_FILAMENT" = true ]; then
+if [[ "$INSTALL_FILAMENT" =~ ^[Ss]$ ]]; then
   docker exec -it "${PROJECT_NAME}-app" composer require filament/filament:"^3.0"
   docker exec -it "${PROJECT_NAME}-app" php artisan vendor:publish --tag=filament-config
 fi
 
-# Instalar Ibex CRUD Generator
-if [ "$INSTALL_IBEX" = true ]; then
+# Instalar Ibex
+if [[ "$INSTALL_IBEX" =~ ^[Ss]$ ]]; then
   docker exec -it "${PROJECT_NAME}-app" composer require ibex/crud-generator --dev
   docker exec -it "${PROJECT_NAME}-app" php artisan vendor:publish --tag=ibex-config
 fi
 
-# Git
 git init
 curl -s https://raw.githubusercontent.com/github/gitignore/main/Laravel.gitignore -o .gitignore
 git add . && git commit -m "Initial Laravel setup"
 
-echo "✅ Projeto '${PROJECT_NAME}' pronto!"
-echo "🌐 App: http://localhost:8000"
-echo "🛠 phpMyAdmin: http://localhost:8080 (Banco: ${DB_NAME})"
-echo ""
-echo "📂 Próximos passos:"
-echo "cd $PROJECT_NAME"
-echo "code ."
-
-# Deploy opcional
-if [ -n "$DEPLOY_TARGET" ]; then
-  if [[ "$DEPLOY_TARGET" =~ ^cpanel: ]]; then
-    HOST="${DEPLOY_TARGET#cpanel:}"
-    read -p "👤 FTP user: " FTP_USER
-    echo "📤 Enviando via FTP para $HOST..."
-    lftp -e "mirror -R ./ public_html/; bye" -u "$FTP_USER","" "$HOST"
-  else
-    echo "📤 Enviando via SSH para $DEPLOY_TARGET..."
-    rsync -avz --exclude='.git' ./ "$USER@$DEPLOY_TARGET:~/public_html/"
-  fi
-fi
+echo "✅ Projeto '${PROJECT_NAME}' criado!"
+echo "🌐 App: http://localhost:${APP_PORT}"
+[[ "$DB_TYPE" = "mysql" ]] && echo "🛠 phpMyAdmin: http://localhost:8080 (DB: ${DB_NAME})"
+echo "📂 cd $PROJECT_NAME && code ."
