@@ -1,8 +1,7 @@
-Claro! Aqui está o `README.md` completo e pronto para você **copiar e colar** diretamente no seu repositório ou pasta do projeto:
 
 ---
 
-````markdown
+---
 # 🚀 Laravel Setup CLI (WSL + Docker)
 
 **Laravel Setup CLI** é um utilitário de linha de comando simples e poderoso para criar ambientes Laravel 12 com Docker no **WSL2 (Ubuntu)**, com suporte a:
@@ -95,19 +94,6 @@ laravel-setup site-cliente --deploy=cpanel:ftp.site.com
 | `--deploy=cpanel:host` | Faz deploy via FTP para cPanel (ex: `--deploy=cpanel:ftp`) |       |                                      |
 
 ---
-
-## 🌐 Acesso ao projeto
-
-* Laravel App: [http://localhost:8000](http://localhost:8000)
-* phpMyAdmin: [http://localhost:8080](http://localhost:8080)
-* MySQL:
-
-  * Host: `mysql`
-  * Database: `laravel`
-  * User: `laravel`
-  * Password: `secret`
-
----
 ## 🌐 Acesso ao projeto
 
 - Laravel App: http://localhost:8000  
@@ -125,29 +111,3 @@ laravel-setup site-cliente --deploy=cpanel:ftp.site.com
 ```bash
 cd nome-do-projeto
 code .
-Você pode começar a desenvolver imediatamente com VS Code e Docker.
-
-📤 Deploy automático
-➤ Para VPS (via SSH):
-bash
-Copiar
-Editar
-laravel-setup minha-app --deploy=meuvps.com
-Envia os arquivos via rsync para ~/public_html/.
-
-➤ Para cPanel (via FTP):
-bash
-Copiar
-Editar
-laravel-setup minha-app --deploy=cpanel:ftp.seusite.com
-Será solicitado o usuário FTP (senha no prompt). Envia via lftp.
-
-
-
-MIT License. Livre para uso, modificação e contribuição.
-
----
-
-```
-
-
