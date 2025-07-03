@@ -1,115 +1,102 @@
 # 🚀 Laravel Setup CLI (WSL + Docker) - Interativo
 
-Este utilitário de linha de comando simplifica a criação de ambientes Laravel 12 com **Docker no WSL**, permitindo que você configure tudo de forma **interativa**, em poucos segundos.
+Este utilitário cria projetos Laravel 12 com Docker e WSL de forma **guiada**, interativa e pronta para desenvolvimento local no VS Code.
 
 ---
 
 ## 🎯 Funcionalidades
 
-✅ Interface interativa via `laravel-setup init`  
+✅ Interface CLI interativa (`laravel-setup init`)  
+✅ Verificação de **portas em uso** e alerta ao usuário  
+✅ Detecção de containers MySQL existentes e **opção de reutilização**  
 ✅ Suporte a PHP 8.0, 8.1, 8.2  
-✅ Banco de dados: escolha entre **MySQL** ou **SQLite**  
-✅ MySQL com **phpMyAdmin** incluso  
-✅ Instalação opcional do **FilamentPHP**  
-✅ Instalação opcional do **Ibex CRUD Generator**  
-✅ Instalação de **starter kits**: Breeze ou Jetstream  
-✅ Geração automática de estrutura de **API**  
-✅ Escolha da porta local para rodar o app  
-✅ Git + .gitignore Laravel automático  
-✅ Pronto para usar com **VS Code + Docker + WSL**
+✅ Escolha entre **MySQL** ou **SQLite**  
+✅ Banco MySQL nomeado como o nome do projeto  
+✅ Instalação opcional de:
+- FilamentPHP
+- Ibex CRUD Generator
+- Starter Kit Breeze ou Jetstream
+- Estrutura básica de API (`php artisan install:api`)  
+✅ Git + `.gitignore` prontos
 
 ---
 
 ## 📦 Requisitos
 
-- WSL2 (Ubuntu)
-- Docker Desktop (com integração WSL ativada)
+- Ubuntu WSL2
+- Docker Desktop com WSL habilitado
 - Git
-- `curl`, `rsync`, `lftp` (para deploy, opcionais)
-- VS Code com extensão *Remote - WSL* (opcional)
+- VS Code com extensão "Remote - WSL"
 
 ---
 
 ## 🚀 Como usar
-
-### 1. Instale o script globalmente
 
 ```bash
 chmod +x laravel-setup.sh
 sudo mv laravel-setup.sh /usr/local/bin/laravel-setup
 ```
 
-### 2. Execute o instalador interativo
-
 ```bash
 laravel-setup init
 ```
 
 ---
 
-## 🤖 Durante a execução, você informará:
+## 🤖 Perguntas do instalador
 
-- 📦 Nome do projeto (ex: `my-app`) **(padrão: my-app)**
-- 🧩 Versão do PHP: `8.0`, `8.1`, `8.2` **(padrão: 8.2)**
-- 💾 Banco de dados: `mysql` ou `sqlite` **(padrão: mysql)**
-- 🌐 Porta local (ex: `8000`) **(padrão: 8000)**
-- 🎨 Deseja instalar **FilamentPHP**? **(padrão: não)**
-- ⚙️ Deseja instalar **Ibex CRUD Generator**? **(padrão: não)**
-- 🚀 Deseja instalar Starter Kit: **breeze**, **jetstream** ou **none** **(padrão: none)**
-- 🧪 Deseja gerar API Laravel? **(padrão: não)**
+- 📦 Nome do projeto (ex: `my-app`)
+- 🧩 Versão do PHP: 8.0 / 8.1 / 8.2
+- 💾 Banco de dados: mysql ou sqlite
+- 🌐 Porta local (ex: `8000`) – verifica se está livre
+- 🎨 Instalar FilamentPHP? (s/n)
+- ⚙️ Instalar Ibex CRUD Generator? (s/n)
+- 🚀 Instalar starter kit (breeze/jetstream/none)
+- 🧪 Instalar estrutura de API com `php artisan install:api`? (s/n)
+
+---
+
+## 🧠 Recursos inteligentes
+
+- Detecta containers MySQL rodando (`mysql:8.0`)
+- Se encontrar, pergunta se deseja reutilizá-los (usa mesma porta e banco)
+- Banco de dados MySQL será sempre igual ao nome do projeto (evita conflitos)
+- Porta local é validada e alertada se estiver ocupada
 
 ---
 
 ## 📂 Próximos passos
-
-Após a instalação:
 
 ```bash
 cd nome-do-projeto
 code .
 ```
 
-Abra com o VS Code (WSL) e comece a desenvolver.
-
 ---
 
-## 🌐 Acesso local
+## 🧪 Acesso
 
-- App Laravel: `http://localhost:<porta_escolhida>`
-- phpMyAdmin (se MySQL): `http://localhost:8080`
-  - Banco: mesmo nome do projeto
-  - Usuário: `laravel`
-  - Senha: `secret`
-
----
-
-## 🛠 Exemplos de uso
-
-```bash
-# Iniciar novo projeto Laravel com MySQL, Filament e Jetstream
-laravel-setup init
-```
+- App Laravel: http://localhost:8000 (ou porta definida)
+- phpMyAdmin: http://localhost:8080 (se usar MySQL)
 
 ---
 
 ## 📤 Deploy (em breve)
 
-Você poderá usar o modo de deploy automatizado para:
+Futuramente haverá opção de:
 
-- 🔄 Enviar projeto via **SSH para VPS**
-- 🔄 Enviar projeto via **FTP para cPanel**
-
-(esse recurso está em desenvolvimento)
+- Deploy para VPS via SSH
+- Deploy para cPanel via FTP
 
 ---
 
 ## 👨‍💻 Autor
 
 **Márcio Rodriguez**  
-[GitHub @rdrgzma](https://github.com/rdrgzma)
+[github.com/rdrgzma](https://github.com/rdrgzma)
 
 ---
 
 ## 🪪 Licença
 
-MIT License. Livre para uso, modificação e contribuição.
+MIT License

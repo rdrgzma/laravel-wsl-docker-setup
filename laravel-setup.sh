@@ -17,8 +17,16 @@ PHP_VERSION=${PHP_VERSION:-8.2}
 read -p "💾 Banco de dados: mysql (default) ou sqlite [mysql]: " DB_TYPE
 DB_TYPE=${DB_TYPE:-mysql}
 
-read -p "🌐 Porta local (ex: 8000) [8000]: " APP_PORT
-APP_PORT=${APP_PORT:-8000}
+# Verificação de porta local
+while true; do
+  read -p "🌐 Porta local (ex: 8000) [8000]: " APP_PORT
+  APP_PORT=${APP_PORT:-8000}
+  if ss -tuln | grep -q ":$APP_PORT "; then
+    echo "⚠️ Porta $APP_PORT já está em uso. Escolha outra porta."
+  else
+    break
+  fi
+done
 
 read -p "🎨 Deseja instalar FilamentPHP? (s/n) [n]: " INSTALL_FILAMENT
 INSTALL_FILAMENT=${INSTALL_FILAMENT:-n}
@@ -35,13 +43,10 @@ INSTALL_API=${INSTALL_API:-n}
 DB_NAME="${PROJECT_NAME//[^a-zA-Z0-9_]/_}"
 
 mkdir -p "$PROJECT_NAME" && cd "$PROJECT_NAME"
-
 docker run --rm -v "$(pwd)":/app composer create-project laravel/laravel="^12.0" .
 
 # docker-compose.yml
 cat > docker-compose.yml <<EOD
-version: "3.8"
-
 services:
   app:
     image: laravelsail/php${PHP_VERSION//.}-composer
@@ -55,6 +60,15 @@ services:
 EOD
 
 if [ "$DB_TYPE" = "mysql" ]; then
+  echo "🔍 Verificando containers MySQL existentes..."
+  MYSQL_RUNNING=$(docker ps --filter ancestor=mysql:8.0 --format "{{.Names}}")
+  if [ -n "$MYSQL_RUNNING" ]; then
+    echo "💡 Encontrado container MySQL em execução: $MYSQL_RUNNING"
+    read -p "Deseja usar esse container existente? (s/n) [n]: " USE_EXISTING_MYSQL
+    USE_EXISTING_MYSQL=${USE_EXISTING_MYSQL:-n}
+  fi
+
+  if [[ "$USE_EXISTING_MYSQL" =~ ^[Nn]$ ]]; then
 cat >> docker-compose.yml <<EOD
     depends_on:
       - mysql
@@ -82,18 +96,21 @@ cat >> docker-compose.yml <<EOD
 volumes:
   mysql-data:
 EOD
+  fi
 fi
 
 # Configurar .env
-sed -i "s/DB_HOST=.*/DB_HOST=${DB_TYPE}/" .env
 if [ "$DB_TYPE" = "mysql" ]; then
+  sed -i "s/DB_CONNECTION=.*/DB_CONNECTION=mysql/" .env
+  sed -i "s/DB_HOST=.*/DB_HOST=mysql/" .env
+  sed -i "s/DB_PORT=.*/DB_PORT=3306/" .env
   sed -i "s/DB_DATABASE=.*/DB_DATABASE=${DB_NAME}/" .env
   sed -i "s/DB_USERNAME=.*/DB_USERNAME=laravel/" .env
   sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=secret/" .env
 else
   sed -i "s/DB_CONNECTION=.*/DB_CONNECTION=sqlite/" .env
-  mkdir -p database && touch database/database.sqlite
   sed -i "s|DB_DATABASE=.*|DB_DATABASE=/var/www/html/database/database.sqlite|" .env
+  mkdir -p database && touch database/database.sqlite
 fi
 
 docker-compose up -d
@@ -121,13 +138,10 @@ if [[ "$INSTALL_IBEX" =~ ^[Ss]$ ]]; then
   docker exec -it "${PROJECT_NAME}-app" php artisan vendor:publish --tag=ibex-config
 fi
 
-# Gerar API básica
+# Gerar API
 if [[ "$INSTALL_API" =~ ^[Ss]$ ]]; then
   docker exec -it "${PROJECT_NAME}-app" php artisan install:api
-  docker exec -it "${PROJECT_NAME}-app" php artisan make:controller Api/TestController --api
-  echo "<?php\n\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::get('/test', fn() => ['message' => 'API funcionando!']);" > routes/api.php
 fi
-
 
 git init
 curl -s https://raw.githubusercontent.com/github/gitignore/main/Laravel.gitignore -o .gitignore
