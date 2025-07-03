@@ -1,62 +1,66 @@
-# Laravel com PHP 8.2
-laravel-setup meu-projeto
-
-# Laravel com PHP 8.1 + Filament
-laravel-setup admin-panel --php=8.1 --filament
-
-# Laravel com CRUD Generator e deploy em VPS
-laravel-setup api-admin --php=8.0 --ibex --deploy=meuvps.com
-
-# Laravel com deploy em cPanel via FTP
-laravel-setup site-cliente --deploy=cpanel:ftp.site.com
-
-
-Utilitário interativo de linha de comando para criar ambientes Laravel 12 com Docker no WSL2, com suporte para FilamentPHP, Ibex CRUD Generator, múltiplas versões do PHP, e deploy em cPanel ou VPS.
-
-![Laravel + Docker + WSL](https://img.shields.io/badge/Laravel-12-red?style=flat-square)
-![Docker](https://img.shields.io/badge/Docker-Supported-blue?style=flat-square)
-![PHP](https://img.shields.io/badge/PHP-8.0%20|%208.1%20|%208.2-blue?style=flat-square)
-![WSL](https://img.shields.io/badge/WSL2-Compatible-green?style=flat-square)
+Claro! Aqui está o `README.md` completo e pronto para você **copiar e colar** diretamente no seu repositório ou pasta do projeto:
 
 ---
 
-## 📦 O que este script faz?
+````markdown
+# 🚀 Laravel Setup CLI (WSL + Docker)
 
-- ✅ Cria projetos Laravel 12 automaticamente no WSL
-- ✅ Usa Docker com MySQL e phpMyAdmin
-- ✅ Suporte a **FilamentPHP**
-- ✅ Suporte a **ibex/crud-generator**
-- ✅ Permite escolher versão do PHP (8.0, 8.1 ou 8.2)
-- ✅ Gera automaticamente `.env` e docker-compose
-- ✅ Deploy interativo para **cPanel** (via FTP) ou **VPS** (via SSH/Rsync)
-- ✅ Geração de `.deb` e publicação automática via GitHub Actions
+**Laravel Setup CLI** é um utilitário de linha de comando simples e poderoso para criar ambientes Laravel 12 com Docker no **WSL2 (Ubuntu)**, com suporte a:
+
+- Várias versões do PHP (8.0, 8.1, 8.2)
+- Instalação opcional do **FilamentPHP** e **Ibex CRUD Generator**
+- MySQL + phpMyAdmin prontos para uso
+- Deploy automatizado para servidores **VPS via SSH** ou **cPanel via FTP**
+
+---
+
+## 🧰 O que este script faz?
+
+- 📦 Cria projeto Laravel 12 automaticamente com Docker
+- 🐳 Gera `docker-compose.yml` com PHP, MySQL e phpMyAdmin
+- 🔐 Configura `.env` com credenciais padrão
+- ⚙️ Permite escolher a versão do PHP
+- 🎨 Instala FilamentPHP (opcional)
+- 🔧 Instala ibex/crud-generator (opcional)
+- 🚀 Permite deploy via SSH ou FTP para VPS/cPanel
+- 🧪 Inicializa repositório Git com `.gitignore` padrão
 
 ---
 
 ## ⚙️ Pré-requisitos
 
+Você precisa ter instalado no WSL:
+
 - WSL2 com Ubuntu
-- Docker Desktop (com integração WSL ativada)
+- Docker Desktop (com integração com WSL)
 - Git
-- Composer (via Docker ou nativo)
-- VS Code com extensão "Remote - WSL"
+- `lftp` (para deploy FTP)
+- `rsync` (para deploy SSH)
+- VS Code com extensão “Remote - WSL” (opcional)
 
 ---
 
-## 🧪 Instalação
+## 📥 Instalação do script
 
-### 🔽 Instalar com `.deb` (recomendado)
+### 1. Clone este repositório ou baixe o script:
 
 ```bash
-wget https://github.com/rdrgzma/laravel-wsl-docker-setup/releases/download/v1.0.0/laravel-setup_1.0.0.deb
-sudo dpkg -i laravel-setup_1.0.0.deb
+git clone https://github.com/rdrgzma/laravel-wsl-docker-setup.git
+cd laravel-wsl-docker-setup
+````
+
+### 2. Torne o script global:
+
+```bash
+chmod +x laravel-setup.sh
+sudo mv laravel-setup.sh /usr/local/bin/laravel-setup
 ```
 
-Agora você pode usar o comando `laravel-setup` globalmente.
+> Agora você pode rodar `laravel-setup` de qualquer lugar no terminal.
 
 ---
 
-## 🛠️ Uso
+## 🚀 Como usar
 
 ```bash
 laravel-setup nome-do-projeto [opções]
@@ -65,72 +69,103 @@ laravel-setup nome-do-projeto [opções]
 ### ✅ Exemplos:
 
 ```bash
-# Laravel com PHP 8.2 (default)
-laravel-setup meu-projeto
+# Criar projeto Laravel com PHP 8.2 (default)
+laravel-setup minha-app
 
-# Laravel com PHP 8.1 e Filament
-laravel-setup meu-app --php=8.1 --filament
+# Laravel com PHP 8.1 + Filament
+laravel-setup painel-admin --php=8.1 --filament
 
-# Laravel com ibex/crud-generator e deploy SSH para VPS
-laravel-setup api-admin --php=8.0 --ibex --deploy=meu-vps.com
+# Laravel com Ibex CRUD Generator e deploy em VPS
+laravel-setup sistema-completo --ibex --deploy=meuvps.com
 
-# Laravel com deploy em cPanel
+# Laravel com deploy via FTP para cPanel
 laravel-setup site-cliente --deploy=cpanel:ftp.site.com
 ```
 
 ---
 
-## 🚀 Deploy (cPanel ou VPS)
+## ⚙️ Opções disponíveis
 
-### ➤ Deploy em VPS via SSH
-Necessário: `rsync` e chave SSH configurada
+| Flag                   | Descrição                                                  |       |                                      |
+| ---------------------- | ---------------------------------------------------------- | ----- | ------------------------------------ |
+| \`--php=8.0            | 8.1                                                        | 8.2\` | Define a versão do PHP (padrão: 8.2) |
+| `--filament`           | Instala o painel FilamentPHP                               |       |                                      |
+| `--ibex`               | Instala o Ibex CRUD Generator                              |       |                                      |
+| `--deploy=host`        | Faz deploy via SSH para VPS (ex: `--deploy=meuvps.com`)    |       |                                      |
+| `--deploy=cpanel:host` | Faz deploy via FTP para cPanel (ex: `--deploy=cpanel:ftp`) |       |                                      |
+
+---
+
+## 🌐 Acesso ao projeto
+
+* Laravel App: [http://localhost:8000](http://localhost:8000)
+* phpMyAdmin: [http://localhost:8080](http://localhost:8080)
+* MySQL:
+
+  * Host: `mysql`
+  * Database: `laravel`
+  * User: `laravel`
+  * Password: `secret`
+
+---
+
+## 📤 Deploy automático
+
+### ➤ Para VPS (via SSH):
 
 ```bash
-laravel-setup meuapp --deploy=meu-vps.com
+laravel-setup meu-projeto --deploy=meuvps.com
 ```
 
-> Usa `rsync` via SSH (padrão `user@host:~/public_html/`)
+> Envia todos os arquivos via `rsync` para `~/public_html/` do servidor.
 
-### ➤ Deploy em cPanel via FTP
+---
+
+### ➤ Para cPanel (via FTP):
 
 ```bash
-laravel-setup loja --deploy=cpanel:ftp.host.com
+laravel-setup meu-site --deploy=cpanel:ftp.dominio.com
 ```
 
-> Será solicitado seu usuário e senha FTP.
+> Será solicitado o usuário FTP. A senha será solicitada ao iniciar o upload com `lftp`.
 
 ---
 
-## 🔁 GitHub Actions incluídas
+## 🛠 Recomendações
 
-- **`release.yml`** – Cria `.deb` automaticamente em cada tag `vX.X.X`
-- **`deploy.yml`** – Faz deploy automático para VPS ao criar uma tag `deploy-host`
-
-### ✅ Secrets necessários
-
-| Secret           | Descrição                     |
-|------------------|-------------------------------|
-| `SSH_KEY`        | Chave privada SSH (deploy VPS) |
-| `REMOTE_HOST`    | IP ou domínio do VPS           |
+* Para múltiplos projetos, use pastas diferentes por projeto.
+* Personalize o `docker-compose.yml` se quiser adicionar Redis, Mailhog, etc.
+* Adicione `ALIAS` no seu `.bashrc` se quiser atalhos para `artisan`, `composer`, etc.
 
 ---
 
-## 🧰 Recursos futuros
+## 🧠 Dica para uso com VS Code
 
-- [ ] Suporte a Redis e Redis Commander
-- [ ] Multi-tenant com Tenancy for Laravel
-- [ ] Deploy para servidores PaaS (Railway, Heroku)
-- [ ] Assistente de configuração via `dialog` ou `fzf`
+Abra o terminal do WSL e execute:
+
+```bash
+code .
+```
+
+> Isso abrirá o VS Code diretamente no projeto, com suporte total ao Docker, intellisense, terminal WSL etc.
 
 ---
 
-## 👨‍💻 Autor
+## 🧑‍💻 Autor
 
-**Márcio Rodriguez** – [@rdrgzma](https://github.com/rdrgzma)  
-Sistema criado para facilitar projetos Laravel no WSL com Docker + VS Code.
+**Márcio Rodriguez**
+[GitHub @rdrgzma](https://github.com/rdrgzma)
 
 ---
 
 ## 🪪 Licença
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
+MIT License. Livre para uso, modificação e contribuição.
+
+---
+
+```
+
+
+```
+
