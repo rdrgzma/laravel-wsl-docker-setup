@@ -1,12 +1,16 @@
 #!/bin/bash
 
+# -------------------------------
+# Laravel Setup CLI (global)
+# -------------------------------
+
 PROJECT_NAME=""
 PHP_VERSION="8.2"
 INSTALL_FILAMENT=false
 INSTALL_IBEX=false
 DEPLOY_TARGET=""
 
-# Parse argumentos
+# 🧠 Parse argumentos
 for arg in "$@"; do
   case $arg in
     --php=*) PHP_VERSION="${arg#*=}"; shift ;;
@@ -21,16 +25,24 @@ for arg in "$@"; do
   esac
 done
 
-PROJECT_NAME=${PROJECT_NAME:-laravel12-docker}
+if [ -z "$PROJECT_NAME" ]; then
+  echo "❌ Nome do projeto é obrigatório."
+  echo "Uso: laravel-setup nome-do-projeto [--php=8.2] [--filament] [--ibex] [--deploy=host]"
+  exit 1
+fi
 
 echo "📦 Criando projeto Laravel '${PROJECT_NAME}' com PHP ${PHP_VERSION}"
-echo "📦 Filament: ${INSTALL_FILAMENT}, Ibex: ${INSTALL_IBEX}, Deploy: ${DEPLOY_TARGET}"
+echo "➡️ Filament: ${INSTALL_FILAMENT}, Ibex: ${INSTALL_IBEX}, Deploy: ${DEPLOY_TARGET}"
 
+# Criar diretório e iniciar projeto Laravel via Docker
 mkdir -p "$PROJECT_NAME" && cd "$PROJECT_NAME"
+
 docker run --rm -v "$(pwd)":/app composer create-project laravel/laravel="^12.0" .
 
+# Criar docker-compose.yml
 cat > docker-compose.yml <<EOD
 version: "3.8"
+
 services:
   app:
     image: laravelsail/php${PHP_VERSION//.}-composer
@@ -43,6 +55,7 @@ services:
     command: php artisan serve --host=0.0.0.0 --port=8000
     depends_on:
       - mysql
+
   mysql:
     image: mysql:8.0
     environment:
@@ -52,6 +65,7 @@ services:
       MYSQL_PASSWORD: secret
     volumes:
       - mysql-data:/var/lib/mysql
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
@@ -61,42 +75,49 @@ services:
       MYSQL_ROOT_PASSWORD: root
     depends_on:
       - mysql
+
 volumes:
   mysql-data:
 EOD
 
+# Ajustar .env
 sed -i 's/DB_HOST=.*/DB_HOST=mysql/' .env
 sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' .env
 sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
 
 docker-compose up -d
 
+# Instalar Filament se solicitado
 if [ "$INSTALL_FILAMENT" = true ]; then
-  docker exec -it ${PROJECT_NAME}-app composer require filament/filament:"^3.0"
-  docker exec -it ${PROJECT_NAME}-app php artisan vendor:publish --tag=filament-config
+  docker exec -it "${PROJECT_NAME}-app" composer require filament/filament:"^3.0"
+  docker exec -it "${PROJECT_NAME}-app" php artisan vendor:publish --tag=filament-config
 fi
 
+# Instalar Ibex CRUD Generator
 if [ "$INSTALL_IBEX" = true ]; then
-  docker exec -it ${PROJECT_NAME}-app composer require ibex/crud-generator --dev
-  docker exec -it ${PROJECT_NAME}-app php artisan vendor:publish --tag=ibex-config
+  docker exec -it "${PROJECT_NAME}-app" composer require ibex/crud-generator --dev
+  docker exec -it "${PROJECT_NAME}-app" php artisan vendor:publish --tag=ibex-config
 fi
 
+# Git init
 git init
 curl -s https://raw.githubusercontent.com/github/gitignore/main/Laravel.gitignore -o .gitignore
-git add . && git commit -m "Initial commit"
+git add . && git commit -m "Initial Laravel setup"
 
-echo "✅ Projeto criado com PHP ${PHP_VERSION}. Acesse http://localhost:8000 e phpMyAdmin em :8080"
+echo "✅ Projeto pronto!"
+echo "🌐 App: http://localhost:8000"
+echo "🛠 phpMyAdmin: http://localhost:8080"
 
+# Deploy opcional
 if [ -n "$DEPLOY_TARGET" ]; then
   if [[ "$DEPLOY_TARGET" =~ ^cpanel: ]]; then
     HOST="${DEPLOY_TARGET#cpanel:}"
-    read -p "cPanel FTP user: " FTP_USER
-    echo "Fazendo upload via FTP..."
-    lftp -e "mirror -R ./ public_html/; bye" -u "$FTP_USER", "$HOST"
-    echo "✔️ Deploy no cPanel concluído."
+    read -p "👤 FTP user: " FTP_USER
+    echo "📤 Enviando via FTP para $HOST..."
+    lftp -e "mirror -R ./ public_html/; bye" -u "$FTP_USER","" "$HOST"
   else
-    echo "Deploy SSH VPS em ${DEPLOY_TARGET}..."
-    rsync -avz --exclude '.git/' ./ "$USER@${DEPLOY_TARGET}:~/public_html/"
-    echo "✔️ Deploy SSH concluído."
+    echo "📤 Enviando via SSH para $DEPLOY_TARGET..."
+    rsync -avz --exclude='.git' ./ "$USER@$DEPLOY_TARGET:~/public_html/"
   fi
 fi
+

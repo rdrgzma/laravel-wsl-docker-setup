@@ -1,4 +1,15 @@
-# 🚀 Laravel WSL Docker Setup
+# Laravel com PHP 8.2
+laravel-setup meu-projeto
+
+# Laravel com PHP 8.1 + Filament
+laravel-setup admin-panel --php=8.1 --filament
+
+# Laravel com CRUD Generator e deploy em VPS
+laravel-setup api-admin --php=8.0 --ibex --deploy=meuvps.com
+
+# Laravel com deploy em cPanel via FTP
+laravel-setup site-cliente --deploy=cpanel:ftp.site.com
+
 
 Utilitário interativo de linha de comando para criar ambientes Laravel 12 com Docker no WSL2, com suporte para FilamentPHP, Ibex CRUD Generator, múltiplas versões do PHP, e deploy em cPanel ou VPS.
 

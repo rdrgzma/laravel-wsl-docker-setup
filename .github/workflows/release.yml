@@ -25,8 +25,8 @@ Architecture: all
 Maintainer: ${GITHUB_ACTOR} <noreply@github.com>
 Description: Script installer for Laravel setup
 EOF
-          dpkg-deb --build pkg
-          mv pkg.deb laravel-setup_${GITHUB_REF#refs/tags/}.deb
+       dpkg-deb --build pkg
+        mv pkg.deb laravel-setup_${GITHUB_REF#refs/tags/}.deb
 
       - name: Upload .deb
         uses: softprops/action-gh-release@v2
