@@ -88,7 +88,7 @@ laravel-setup site-cliente --deploy=cpanel:ftp.site.com
 
 | Flag                   | Descrição                                                  |       |                                      |
 | ---------------------- | ---------------------------------------------------------- | ----- | ------------------------------------ |
-| \`--php=8.0            | 8.1                                                        | 8.2\` | Define a versão do PHP (padrão: 8.2) |
+| `--php=8.1`            | Instala o PHP 8.1                                                        | 8.2 | Define a versão do PHP (padrão: 8.2) |
 | `--filament`           | Instala o painel FilamentPHP                               |       |                                      |
 | `--ibex`               | Instala o Ibex CRUD Generator                              |       |                                      |
 | `--deploy=host`        | Faz deploy via SSH para VPS (ex: `--deploy=meuvps.com`)    |       |                                      |
