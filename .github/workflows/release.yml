@@ -1,0 +1,32 @@
+name: Build & Release .deb
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build .deb
+        run: |
+          mkdir -p pkg/usr/local/bin
+          cp laravel-setup.sh pkg/usr/local/bin/laravel-setup
+          mkdir -p pkg/DEBIAN
+          cat > pkg/DEBIAN/control <<EOF
+Package: laravel-setup
+Version: ${GITHUB_REF#refs/tags/}
+Section: base
+Priority: optional
+Architecture: all
+Maintainer: ${GITHUB_ACTOR} <noreply@github.com>
+Description: Script installer for Laravel setup
+EOF
+          dpkg-deb --build pkg
+          mv pkg.deb laravel-setup_${GITHUB_REF#refs/tags/}.deb
+      - name: Upload .deb
+        uses: softprops/action-gh-release@v2
+        with:
+          files: laravel-setup_*.deb
